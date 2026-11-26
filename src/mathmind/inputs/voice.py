@@ -65,16 +65,27 @@ def normalize_transcript(transcript: str) -> str:
 
 
 def transcribe_file(audio_path: str, model_name: str = "base") -> str:
-    """Transcribe an audio file using Whisper. Requires openai-whisper installed."""
+    """Transcribe an audio file using Whisper, with SpeechRecognition fallback."""
     try:
         import whisper  # type: ignore[import]
+
+        model = whisper.load_model(model_name)
+        result = model.transcribe(audio_path)
+        return result["text"].strip()
     except ImportError:
+        pass
+
+    try:
+        import speech_recognition as sr  # type: ignore[import]
+
+        recognizer = sr.Recognizer()
+        with sr.AudioFile(audio_path) as source:
+            audio_data = recognizer.record(source)
+        return recognizer.recognize_google(audio_data).strip()
+    except ImportError as exc:
         raise ImportError(
-            "openai-whisper not installed. Run: pip install openai-whisper"
-        )
-    model = whisper.load_model(model_name)
-    result = model.transcribe(audio_path)
-    return result["text"].strip()
+            "No speech-to-text backend installed. Run: pip install openai-whisper or SpeechRecognition"
+        ) from exc
 
 
 def voice_to_expression(audio_path: str, model_name: str = "base") -> tuple[str, str]:

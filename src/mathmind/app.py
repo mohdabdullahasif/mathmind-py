@@ -360,12 +360,9 @@ with tab2:
                 from mathmind.inputs.voice import transcribe_file
 
                 transcript = transcribe_file(tmp_path)
-                st.info(f"Whisper transcript: `{transcript}`")
-            except ImportError:
-                st.warning(
-                    "Whisper (`openai-whisper`) is not installed in this environment. "
-                    "Using the text box on the right instead."
-                )
+                st.info(f"Transcript: `{transcript}`")
+            except Exception as exc:
+                st.warning(f"Audio transcription unavailable ({exc}). Using the text box if provided.")
             finally:
                 if os.path.exists(tmp_path):
                     os.unlink(tmp_path)
