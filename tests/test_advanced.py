@@ -220,3 +220,16 @@ def test_store_save_and_retrieve(tmp_path) -> None:
     rows = get_history(5, db_path=db)
     assert len(rows) == 1
     assert rows[0]["expression"] == "2+2"
+
+
+# ---- vision fallback ----
+def test_vision_fallback_predict() -> None:
+    from mathmind.inputs.vision.infer import predict_symbols_fallback, predictions_to_expression
+    from mathmind.inputs.vision.train_fallback import _render_sample
+
+    crops = [_render_sample("1"), _render_sample("+"), _render_sample("2")]
+    preds = predict_symbols_fallback(crops)
+    assert len(preds) == 3
+    expr, conf = predictions_to_expression(preds)
+    assert len(expr) == 3
+    assert conf > 0.0

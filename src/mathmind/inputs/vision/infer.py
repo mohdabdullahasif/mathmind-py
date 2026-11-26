@@ -1,11 +1,47 @@
 """Symbol inference: run CNN on image crops and return predictions."""
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
 
 import numpy as np
 
 from mathmind.inputs.vision.model import CLASSES, NUM_CLASSES
+
+_FALLBACK_MODEL_PATH = Path(__file__).parent / "symbol_clf.joblib"
+_fallback_clf: Any = None
+
+
+def _get_fallback_clf() -> Any:
+    global _fallback_clf
+    if _fallback_clf is None:
+        import joblib
+
+        if not _FALLBACK_MODEL_PATH.exists():
+            from mathmind.inputs.vision.train_fallback import train_fallback_model
+
+            train_fallback_model(out_path=_FALLBACK_MODEL_PATH)
+        _fallback_clf = joblib.load(_FALLBACK_MODEL_PATH)
+    return _fallback_clf
+
+
+def predict_symbols_fallback(
+    crops: list[Any],
+    top_k: int = 3,
+) -> list[list[tuple[str, float]]]:
+    """Predict top-k (label, confidence) per crop using the lightweight sklearn model."""
+    if not crops:
+        return []
+    from mathmind.inputs.vision.train_fallback import extract_crop_features
+
+    clf = _get_fallback_clf()
+    X = np.array([extract_crop_features(c) for c in crops], dtype=np.float32)
+    probs = clf.predict_proba(X)
+    results = []
+    for prob_row in probs:
+        indices = np.argsort(prob_row)[::-1][:top_k]
+        results.append([(CLASSES[i], float(prob_row[i])) for i in indices])
+    return results
 
 
 def predict_symbols(

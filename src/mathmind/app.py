@@ -165,7 +165,12 @@ def _show_result(result: Result) -> None:
 
 def _process_handwriting_image(img_path: str, source_name: str) -> None:
     try:
-        from mathmind.inputs.vision.infer import predict_symbols, predictions_to_expression
+        from mathmind.core.parser import parse
+        from mathmind.inputs.vision.infer import (
+            beam_search_expression,
+            predict_symbols,
+            predict_symbols_fallback,
+        )
         from mathmind.inputs.vision.model import load_model
         from mathmind.inputs.vision.segment import preprocess, segment_symbols
     except ImportError as exc:
@@ -176,25 +181,35 @@ def _process_handwriting_image(img_path: str, source_name: str) -> None:
     crops = segment_symbols(binary)
     st.success(f"Detected **{len(crops)}** symbol(s).")
 
-    if crops:
-        cols = st.columns(min(len(crops), 8))
-        for idx, crop in enumerate(crops[:8]):
-            cols[idx].image(crop, caption=f"#{idx + 1}", width=48)
+    if not crops:
+        st.warning("No symbols detected. Try drawing thicker strokes.")
+        return
+
+    cols = st.columns(min(len(crops), 8))
+    for idx, crop in enumerate(crops[:8]):
+        cols[idx].image(crop, caption=f"#{idx + 1}", width=48)
 
     model_path = Path("models/symbol_cnn.pt")
+    preds = None
     if model_path.exists():
-        model = load_model(str(model_path))
-        preds = predict_symbols(crops, model)
-        expr, conf = predictions_to_expression(preds)
-        st.info(f"Recognized: `{expr}` (confidence: {conf:.0%})")
-        result = solve(expr, symbols, channel="vision")
-        _show_result(result)
-        save_result(result, raw_input=source_name)
+        try:
+            model = load_model(str(model_path))
+            preds = predict_symbols(crops, model)
+        except ImportError:
+            preds = None
+
+    if preds is None:
+        preds = predict_symbols_fallback(crops)
+
+    expr, conf = beam_search_expression(preds, parse)
+    st.info(f"Recognized: `{expr}` (confidence: {conf:.0%})")
+    if "=" in expr and any(c.isalpha() for c in expr):
+        result = symbolic_solve(expr)
+        result.channel = "vision"
     else:
-        st.warning(
-            "Symbol segmentation succeeded, but `models/symbol_cnn.pt` is not trained yet. "
-            "Train the CNN weights locally and place them in `models/symbol_cnn.pt` to enable recognition."
-        )
+        result = solve(expr, symbols, channel="vision")
+    _show_result(result)
+    save_result(result, raw_input=source_name)
 
 
 # ---- sidebar ----
