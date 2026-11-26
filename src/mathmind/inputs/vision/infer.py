@@ -6,7 +6,7 @@ from typing import Any
 
 import numpy as np
 
-from mathmind.inputs.vision.model import CLASSES, NUM_CLASSES
+from mathmind.inputs.vision.model import CLASSES
 
 _FALLBACK_MODEL_PATH = Path(__file__).parent / "symbol_clf.joblib"
 _fallback_clf: Any = None
@@ -124,6 +124,8 @@ def beam_search_expression(
         new_beams.sort(key=lambda x: x[0], reverse=True)
         beams = new_beams[:beam_width]
 
+    from mathmind.core.errors import MathMindError
+
     # find first parseable candidate
     for log_prob, chars in beams:
         expr = "".join(chars)
@@ -132,7 +134,7 @@ def beam_search_expression(
             import math
             conf = math.exp(log_prob / max(len(chars), 1))
             return expr, conf
-        except Exception:
+        except MathMindError:
             continue
 
     # greedy fallback

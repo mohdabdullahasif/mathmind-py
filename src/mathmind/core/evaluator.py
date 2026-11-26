@@ -11,8 +11,8 @@ from typing import Any
 import numpy as np
 
 from mathmind.core.ast import (
-    ASTNode,
     AssignNode,
+    ASTNode,
     BinaryNode,
     CallNode,
     IdentNode,
@@ -25,9 +25,8 @@ from mathmind.core.errors import (
     DomainError,
     EvalError,
     OverflowMathError,
-    UndefinedVariableError,
 )
-from mathmind.core.symbols import BUILTINS, SymbolTable
+from mathmind.core.symbols import SymbolTable
 
 _TRIG_NAMES = {"sin", "cos", "tan", "asin", "acos", "atan"}
 
@@ -40,7 +39,7 @@ class Evaluator:
         match node:
             case NumberNode(value=v):
                 return v
-            case IdentNode(name=n, col=c):
+            case IdentNode(name=n):
                 return self._sym.get_var(n)
             case UnaryNode(op=op, operand=operand):
                 v = self.eval(operand)

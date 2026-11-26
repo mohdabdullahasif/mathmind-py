@@ -4,11 +4,11 @@ from __future__ import annotations
 import json
 import os
 import sqlite3
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-from mathmind.models import Result, Step
+from mathmind.models import Result
 
 _DB_PATH = Path(os.environ.get("MATHMIND_DB", str(Path.home() / ".mathmind" / "mathmind.db")))
 
@@ -74,7 +74,7 @@ def _init_schema(conn: sqlite3.Connection) -> None:
 def save_result(result: Result, raw_input: str | None = None, db_path: Path | None = None) -> int:
     """Persist a Result and its steps. Returns the history row id."""
     conn = _connect(db_path)
-    now = datetime.now(timezone.utc).isoformat()
+    now = datetime.now(UTC).isoformat()
     value_str = json.dumps(result.value) if not isinstance(result.value, str) else result.value
     cur = conn.execute(
         "INSERT INTO history (created_at, channel, raw_input, expression, result, strategy, confidence, latex) VALUES (?,?,?,?,?,?,?,?)",
@@ -100,8 +100,16 @@ def get_history(limit: int = 50, db_path: Path | None = None) -> list[dict[str, 
     ).fetchall()
     conn.close()
     return [
-        dict(id=r[0], created_at=r[1], channel=r[2], raw_input=r[3],
-             expression=r[4], result=r[5], strategy=r[6], confidence=r[7])
+        {
+            "id": r[0],
+            "created_at": r[1],
+            "channel": r[2],
+            "raw_input": r[3],
+            "expression": r[4],
+            "result": r[5],
+            "strategy": r[6],
+            "confidence": r[7],
+        }
         for r in rows
     ]
 
@@ -110,7 +118,7 @@ def save_variable(name: str, value: float, db_path: Path | None = None) -> None:
     conn = _connect(db_path)
     conn.execute(
         "INSERT OR REPLACE INTO variables (name, value, defined_at) VALUES (?,?,?)",
-        (name, str(value), datetime.now(timezone.utc).isoformat()),
+        (name, str(value), datetime.now(UTC).isoformat()),
     )
     conn.commit()
     conn.close()
@@ -120,7 +128,7 @@ def register_model(name: str, version: str, metrics: dict, db_path: Path | None 
     conn = _connect(db_path)
     conn.execute(
         "INSERT OR REPLACE INTO model_registry (name, version, metrics_json, trained_at) VALUES (?,?,?,?)",
-        (name, version, json.dumps(metrics), datetime.now(timezone.utc).isoformat()),
+        (name, version, json.dumps(metrics), datetime.now(UTC).isoformat()),
     )
     conn.commit()
     conn.close()

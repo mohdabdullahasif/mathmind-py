@@ -52,6 +52,7 @@ def test_symbolic_factor() -> None:
 # ---- matrix ----
 def test_mat_det_2x2() -> None:
     import numpy as np
+
     from mathmind.math.matrix import mat_det
     m = np.array([[1, 2], [3, 4]], dtype=float)
     r = mat_det(m)
@@ -60,6 +61,7 @@ def test_mat_det_2x2() -> None:
 
 def test_mat_det_identity() -> None:
     import numpy as np
+
     from mathmind.math.matrix import mat_det
     m = np.eye(3)
     r = mat_det(m)
@@ -68,6 +70,7 @@ def test_mat_det_identity() -> None:
 
 def test_mat_inverse() -> None:
     import numpy as np
+
     from mathmind.math.matrix import mat_inverse
     m = np.array([[4, 7], [2, 6]], dtype=float)
     r = mat_inverse(m)
@@ -79,8 +82,9 @@ def test_mat_inverse() -> None:
 
 def test_mat_singular() -> None:
     import numpy as np
-    from mathmind.math.matrix import mat_inverse
+
     from mathmind.core.errors import MatrixError
+    from mathmind.math.matrix import mat_inverse
     m = np.array([[1, 2], [2, 4]], dtype=float)
     with pytest.raises(MatrixError):
         mat_inverse(m)
@@ -88,6 +92,7 @@ def test_mat_singular() -> None:
 
 def test_mat_transpose() -> None:
     import numpy as np
+
     from mathmind.math.matrix import mat_ops
     m = np.array([[1, 2, 3], [4, 5, 6]], dtype=float)
     r = mat_ops(m, "transpose")
@@ -127,9 +132,9 @@ def test_nl_percentage() -> None:
 
 
 def test_nl_percent_off() -> None:
-    from mathmind.inputs.nl import translate
     from mathmind.core.engine import evaluate
     from mathmind.core.symbols import SymbolTable
+    from mathmind.inputs.nl import translate
     expr, translated = translate("20% off 2400")
     assert translated
     result = evaluate(expr, SymbolTable())
@@ -152,7 +157,7 @@ def test_nl_squared() -> None:
 
 def test_nl_no_match() -> None:
     from mathmind.inputs.nl import translate
-    expr, translated = translate("hello world")
+    _expr, translated = translate("hello world")
     assert not translated
 
 
@@ -172,14 +177,14 @@ def test_voice_normalize_numbers() -> None:
 # ---- strategy predictor ----
 def test_strategy_predict_returns_tuple() -> None:
     from mathmind.ml.strategy.predict import predict
-    strategy, conf, alts = predict("2 + 3")
+    strategy, conf, _alts = predict("2 + 3")
     assert isinstance(strategy, str)
     assert 0.0 <= conf <= 1.0
 
 
 def test_strategy_matrix() -> None:
     from mathmind.ml.strategy.predict import predict
-    strategy, conf, alts = predict("[[1,2],[3,4]]")
+    strategy, _conf, _alts = predict("[[1,2],[3,4]]")
     assert strategy == "matrix-inverse"
 
 
@@ -210,9 +215,9 @@ def test_latex_sqrt() -> None:
 
 # ---- storage ----
 def test_store_save_and_retrieve(tmp_path) -> None:
-    from mathmind.store import save_result, get_history
+
     from mathmind.models import Result, Step
-    from pathlib import Path
+    from mathmind.store import get_history, save_result
 
     db = tmp_path / "test.db"
     r = Result(value=42.0, steps=[Step(1, "Test", "2+2", "4")], expression="2+2", latex="2+2")

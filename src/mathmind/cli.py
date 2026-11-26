@@ -1,12 +1,7 @@
 """Typer CLI entry point for MathMind."""
 from __future__ import annotations
 
-import sys
-from pathlib import Path
-from typing import Optional
-
 import typer
-from rich import print as rprint
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
@@ -14,7 +9,7 @@ from rich.table import Table
 from mathmind.core.engine import solve
 from mathmind.core.symbols import SymbolTable
 from mathmind.inputs.nl import translate
-from mathmind.inputs.voice import normalize_transcript
+from mathmind.math.matrix import mat_det, mat_inverse, mat_ops, stats_summary
 from mathmind.math.symbolic import (
     symbolic_diff,
     symbolic_expand,
@@ -23,7 +18,6 @@ from mathmind.math.symbolic import (
     symbolic_simplify,
     symbolic_solve,
 )
-from mathmind.math.matrix import mat_det, mat_inverse, mat_ops, stats_summary
 from mathmind.ml.strategy.predict import predict as predict_strategy
 from mathmind.store import get_history, save_result
 
@@ -56,7 +50,7 @@ def cmd_solve(
     expression: str = typer.Argument(..., help="Math expression or equation"),
     var: str = typer.Option("x", "--var", "-v", help="Variable for solving"),
     steps: bool = typer.Option(True, "--steps/--no-steps", help="Show solution steps"),
-    export: Optional[str] = typer.Option(None, "--export", "-e", help="Export PDF path"),
+    export: str | None = typer.Option(None, "--export", "-e", help="Export PDF path"),
 ) -> None:
     """Solve or evaluate a math expression."""
     strategy, confidence, alts = predict_strategy(expression)
@@ -76,8 +70,8 @@ def cmd_symbolic(
     expression: str = typer.Argument(..., help="Expression or equation"),
     op: str = typer.Option("solve", "--op", "-o", help="Operation: solve|diff|integrate|simplify|expand|factor"),
     var: str = typer.Option("x", "--var", "-v"),
-    lower: Optional[str] = typer.Option(None, "--lower"),
-    upper: Optional[str] = typer.Option(None, "--upper"),
+    lower: str | None = typer.Option(None, "--lower"),
+    upper: str | None = typer.Option(None, "--upper"),
 ) -> None:
     """Symbolic math operations (solve, diff, integrate, simplify, expand, factor)."""
     match op:
@@ -109,7 +103,7 @@ def cmd_nl(
     if was_translated:
         console.print(f"[yellow]Translated: {expression}[/yellow]")
     else:
-        console.print(f"[dim]No NL pattern matched. Trying expression directly.[/dim]")
+        console.print("[dim]No NL pattern matched. Trying expression directly.[/dim]")
     result = solve(expression, _global_symbols, channel="nl")
     _display_result(result)
     save_result(result, raw_input=text)
@@ -122,6 +116,7 @@ def cmd_matrix(
 ) -> None:
     """Matrix operations."""
     import numpy as np
+
     from mathmind.core.engine import solve as eng_solve
     r = eng_solve(expression, _global_symbols)
     if r.error or not isinstance(r.value, np.ndarray):
@@ -210,7 +205,7 @@ def cmd_repl() -> None:
                 console.print(f"[yellow]NL→ {expr}[/yellow]")
                 text = expr
 
-        strategy, confidence, alts = predict_strategy(text)
+        strategy, confidence, _alts = predict_strategy(text)
         result = solve(text, _global_symbols, strategy=strategy, confidence=confidence)
         _display_result(result)
         if not result.error:

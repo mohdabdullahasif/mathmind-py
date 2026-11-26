@@ -15,17 +15,17 @@ from mathmind.core.parser import parse
 from mathmind.core.symbols import SymbolTable
 
 __all__ = [
-    "solve",
-    "evaluate",
-    "parse",
-    "SymbolTable",
-    "MathMindError",
-    "LexError",
-    "ParseError",
-    "EvalError",
     "DivisionByZeroError",
     "DomainError",
-    "OverflowMathError",
-    "UndefinedVariableError",
+    "EvalError",
+    "LexError",
+    "MathMindError",
     "MatrixError",
+    "OverflowMathError",
+    "ParseError",
+    "SymbolTable",
+    "UndefinedVariableError",
+    "evaluate",
+    "parse",
+    "solve",
 ]

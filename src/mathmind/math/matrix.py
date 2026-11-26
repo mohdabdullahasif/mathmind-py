@@ -45,16 +45,16 @@ def mat_ops(matrix: np.ndarray, op: str) -> Result:
     """Transpose, rank, trace, eigenvalues, eigenvectors."""
     match op:
         case "transpose":
-            val = matrix.T
-            return Result(value=val, steps=[Step(1, "Transpose matrix", str(matrix.tolist()), str(val.tolist()))], strategy="matrix-transpose")
+            transposed = matrix.T
+            return Result(value=transposed, steps=[Step(1, "Transpose matrix", str(matrix.tolist()), str(transposed.tolist()))], strategy="matrix-transpose")
         case "rank":
-            val = int(np.linalg.matrix_rank(matrix))
-            return Result(value=val, steps=[Step(1, "Compute rank", str(matrix.tolist()), str(val))], strategy="matrix-rank")
+            rank_val = int(np.linalg.matrix_rank(matrix))
+            return Result(value=rank_val, steps=[Step(1, "Compute rank", str(matrix.tolist()), str(rank_val))], strategy="matrix-rank")
         case "trace":
-            val = float(np.trace(matrix))
-            return Result(value=val, steps=[Step(1, "Trace = sum of diagonal", str(matrix.tolist()), str(val))], strategy="matrix-trace")
+            trace_val = float(np.trace(matrix))
+            return Result(value=trace_val, steps=[Step(1, "Trace = sum of diagonal", str(matrix.tolist()), str(trace_val))], strategy="matrix-trace")
         case "eigenvalues":
-            vals, vecs = np.linalg.eig(matrix)
+            vals, _vecs = np.linalg.eig(matrix)
             return Result(value=vals.tolist(), steps=[Step(1, "Compute eigenvalues", str(matrix.tolist()), str(vals.tolist()))], strategy="eigenvalues")
         case _:
             raise MatrixError(f"Unknown matrix operation: {op}")
@@ -115,7 +115,7 @@ def stats_summary(data: list[float]) -> Result:
 def linear_regression(x: list[float], y: list[float]) -> Result:
     xarr = np.array(x)
     yarr = np.array(y)
-    slope, intercept, r_value, p_value, std_err = scipy_stats.linregress(xarr, yarr)
+    slope, intercept, r_value, p_value, _std_err = scipy_stats.linregress(xarr, yarr)
     r2 = r_value ** 2
     steps = [
         Step(1, "Compute means", "", f"x̄={float(np.mean(xarr)):.4f}, ȳ={float(np.mean(yarr)):.4f}"),

@@ -22,8 +22,8 @@ No eval() or exec() used anywhere.
 from __future__ import annotations
 
 from mathmind.core.ast import (
-    ASTNode,
     AssignNode,
+    ASTNode,
     BinaryNode,
     CallNode,
     IdentNode,

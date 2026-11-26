@@ -5,8 +5,8 @@ Rules: constant folding, x+0, x*1, x*0, x-x, x**1, x**0 etc.
 from __future__ import annotations
 
 from mathmind.core.ast import (
-    ASTNode,
     AssignNode,
+    ASTNode,
     BinaryNode,
     CallNode,
     IdentNode,
@@ -45,17 +45,19 @@ def simplify(node: ASTNode) -> ASTNode:
             sr = simplify(right)
             # constant folding
             if isinstance(sl, NumberNode) and isinstance(sr, NumberNode):
-                try:
-                    match op:
-                        case "+": return NumberNode(sl.value + sr.value)
-                        case "-": return NumberNode(sl.value - sr.value)
-                        case "*": return NumberNode(sl.value * sr.value)
-                        case "/":
-                            if sr.value != 0:
-                                return NumberNode(sl.value / sr.value)
-                        case "**": return NumberNode(sl.value ** sr.value)
-                except Exception:
-                    pass
+                if op == "+":
+                    return NumberNode(sl.value + sr.value)
+                if op == "-":
+                    return NumberNode(sl.value - sr.value)
+                if op == "*":
+                    return NumberNode(sl.value * sr.value)
+                if op == "/" and sr.value != 0:
+                    return NumberNode(sl.value / sr.value)
+                if op == "**":
+                    try:
+                        return NumberNode(sl.value ** sr.value)
+                    except (OverflowError, ValueError):
+                        pass
             # algebraic identities
             match op:
                 case "+":

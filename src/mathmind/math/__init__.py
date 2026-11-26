@@ -17,16 +17,16 @@ from mathmind.math.symbolic import (
 )
 
 __all__ = [
-    "symbolic_simplify",
-    "symbolic_expand",
-    "symbolic_factor",
-    "symbolic_diff",
-    "symbolic_integrate",
-    "symbolic_solve",
+    "linear_regression",
     "mat_det",
     "mat_inverse",
     "mat_ops",
     "mat_solve",
     "stats_summary",
-    "linear_regression",
+    "symbolic_diff",
+    "symbolic_expand",
+    "symbolic_factor",
+    "symbolic_integrate",
+    "symbolic_simplify",
+    "symbolic_solve",
 ]

@@ -7,7 +7,6 @@ from __future__ import annotations
 
 import re
 
-
 # ------------------------------------------------------------------ word numbers
 _WORD_TO_NUM: dict[str, str] = {
     "zero": "0", "one": "1", "two": "2", "three": "3", "four": "4",

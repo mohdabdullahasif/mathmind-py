@@ -5,8 +5,6 @@ Classes: 0-9, +, -, ×, ÷, =, (, ), x, y, z, ., /
 """
 from __future__ import annotations
 
-import json
-from pathlib import Path
 from typing import Any
 
 # Class labels (index -> character)
@@ -21,8 +19,7 @@ NUM_CLASSES = len(CLASSES)
 def build_model() -> Any:
     """Build a PyTorch CNN model."""
     try:
-        import torch
-        import torch.nn as nn
+        from torch import nn
     except ImportError:
         raise ImportError("PyTorch not installed. Run: pip install torch torchvision")
 

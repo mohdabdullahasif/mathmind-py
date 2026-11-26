@@ -1,0 +1,23 @@
+{
+  "symbol_classifier": {
+    "accuracy": 0.9968253968253968,
+    "total_samples": 630
+  },
+  "parser_feedback": {
+    "n_equations": 100,
+    "exact_accuracy_without_feedback": 0.97,
+    "exact_accuracy_with_feedback": 1.0,
+    "parseable_without_feedback": 0.97,
+    "parseable_with_feedback": 1.0
+  },
+  "strategy_models": {
+    "logistic_regression": 1.0,
+    "random_forest": 1.0,
+    "gradient_boosting": 1.0
+  },
+  "voice_normalizer": {
+    "n_samples": 50,
+    "avg_wer_before": 2.0366666666666666,
+    "avg_wer_after": 0.0
+  }
+}

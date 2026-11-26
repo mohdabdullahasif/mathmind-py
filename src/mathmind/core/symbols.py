@@ -6,7 +6,8 @@ No eval() or exec() used anywhere.
 from __future__ import annotations
 
 import math
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 from mathmind.core.errors import UndefinedVariableError
 

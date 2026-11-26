@@ -1,4 +1,4 @@
-# MathMind 🧮
+# MathMind
 
 **An AI-powered math assistant** — solve expressions, do symbolic math, recognize handwriting, process voice input, and export beautiful PDF worksheets.
 

@@ -1,5 +1,6 @@
 """Step generator for MathMind symbolic operations."""
 from __future__ import annotations
+
 from mathmind.models import Step
 
 
@@ -7,7 +8,7 @@ def linear_steps(equation: str, a: float, b: float, var: str = "x") -> list[Step
     """Generate steps for ax + b = 0."""
     steps = [
         Step(1, f"Equation: {equation}", equation, equation),
-        Step(2, f"Move constant to right side", f"{a}{var} + {b} = 0", f"{a}{var} = {-b}"),
+        Step(2, "Move constant to right side", f"{a}{var} + {b} = 0", f"{a}{var} = {-b}"),
         Step(3, f"Divide both sides by {a}", f"{a}{var} = {-b}", f"{var} = {-b / a:.6g}"),
     ]
     return steps

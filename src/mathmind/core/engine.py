@@ -13,7 +13,6 @@ from mathmind.core.simplifier import simplify
 from mathmind.core.symbols import SymbolTable
 from mathmind.models import Result, Step
 
-
 _DEFAULT_SYMBOLS = SymbolTable()
 
 
@@ -63,7 +62,7 @@ def solve(
             channel=channel,
             error=str(exc),
         )
-    except Exception as exc:
+    except (ArithmeticError, ValueError, TypeError) as exc:
         return Result(
             value=None,
             steps=steps,

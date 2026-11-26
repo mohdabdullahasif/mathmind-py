@@ -2,15 +2,13 @@
 from __future__ import annotations
 
 import math
+
 import pytest
 
+from mathmind.core.engine import evaluate, solve
+from mathmind.core.errors import LexError, MathMindError, ParseError
 from mathmind.core.parser import parse
-from mathmind.core.evaluator import Evaluator
 from mathmind.core.symbols import SymbolTable
-from mathmind.core.engine import solve, evaluate
-from mathmind.core.errors import (
-    DivisionByZeroError, LexError, ParseError, UndefinedVariableError, DomainError
-)
 
 
 def _eval(expr: str, sym: SymbolTable | None = None) -> float:
@@ -123,22 +121,22 @@ def test_nested_user_function() -> None:
 
 # ---- errors ----
 def test_division_by_zero() -> None:
-    with pytest.raises(Exception):
+    with pytest.raises(MathMindError):
         _eval("1 / 0")
 
 
 def test_undefined_variable() -> None:
-    with pytest.raises(Exception):
+    with pytest.raises(MathMindError):
         _eval("undefined_var_xyz")
 
 
 def test_lex_error() -> None:
-    with pytest.raises(Exception):
+    with pytest.raises(MathMindError):
         _eval("2 @ 3")
 
 
 def test_parse_error() -> None:
-    with pytest.raises(Exception):
+    with pytest.raises(MathMindError):
         _eval("(2 + 3")
 
 
@@ -157,11 +155,9 @@ def test_matrix_literal() -> None:
 
 
 def test_matrix_add() -> None:
-    import numpy as np
     sym = SymbolTable()
-    a = evaluate("[[1,0],[0,1]]", sym)
-    b = evaluate("[[2,3],[4,5]]", sym)
-    # direct eval
+    evaluate("[[1,0],[0,1]]", sym)
+    evaluate("[[2,3],[4,5]]", sym)
     r = solve("[[1,0],[0,1]] + [[2,3],[4,5]]", sym)
     assert r.error is None
 
@@ -181,9 +177,8 @@ def test_result_has_latex() -> None:
 
 # ---- simplifier ----
 def test_simplifier_x_plus_zero() -> None:
-    from mathmind.core.parser import parse
+    from mathmind.core.ast import BinaryNode, IdentNode, NumberNode
     from mathmind.core.simplifier import simplify
-    from mathmind.core.ast import NumberNode, IdentNode, BinaryNode
     node = BinaryNode("+", IdentNode("x"), NumberNode(0.0))
     simplified = simplify(node)
     assert isinstance(simplified, IdentNode)
@@ -191,18 +186,16 @@ def test_simplifier_x_plus_zero() -> None:
 
 
 def test_simplifier_x_times_one() -> None:
-    from mathmind.core.parser import parse
+    from mathmind.core.ast import BinaryNode, IdentNode, NumberNode
     from mathmind.core.simplifier import simplify
-    from mathmind.core.ast import NumberNode, IdentNode, BinaryNode
     node = BinaryNode("*", IdentNode("x"), NumberNode(1.0))
     simplified = simplify(node)
     assert isinstance(simplified, IdentNode)
 
 
 def test_simplifier_x_minus_x() -> None:
-    from mathmind.core.parser import parse
+    from mathmind.core.ast import BinaryNode, IdentNode, NumberNode
     from mathmind.core.simplifier import simplify
-    from mathmind.core.ast import NumberNode, IdentNode, BinaryNode
     node = BinaryNode("-", IdentNode("x"), IdentNode("x"))
     simplified = simplify(node)
     assert isinstance(simplified, NumberNode)
@@ -210,8 +203,8 @@ def test_simplifier_x_minus_x() -> None:
 
 
 def test_simplifier_constant_folding() -> None:
-    from mathmind.core.simplifier import simplify
     from mathmind.core.parser import parse
+    from mathmind.core.simplifier import simplify
     node = parse("2 + 3 * 4")
     simplified = simplify(node)
     from mathmind.core.ast import NumberNode
@@ -228,5 +221,5 @@ def test_fuzz_no_crash(expr: str) -> None:
     """Parser must not crash on garbage input – just raise an exception."""
     try:
         parse(expr)
-    except Exception:
-        pass  # expected
+    except (LexError, ParseError):
+        pass

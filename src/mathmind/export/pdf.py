@@ -1,8 +1,8 @@
 """PDF exporter using ReportLab (no pdflatex required)."""
 from __future__ import annotations
 
-from pathlib import Path
 from datetime import date
+from pathlib import Path
 from typing import Any
 
 from mathmind.models import Result
@@ -11,11 +11,11 @@ from mathmind.models import Result
 def export_pdf(result: Result, output_path: str, title: str = "MathMind Solution") -> str:
     """Export a Result to a PDF file. Returns the path."""
     try:
+        from reportlab.lib import colors
         from reportlab.lib.pagesizes import A4
         from reportlab.lib.styles import getSampleStyleSheet
-        from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
-        from reportlab.lib import colors
         from reportlab.lib.units import cm
+        from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
     except ImportError:
         raise ImportError("reportlab not installed. Run: pip install reportlab")
 
@@ -72,9 +72,8 @@ def export_worksheet(
     try:
         from reportlab.lib.pagesizes import A4
         from reportlab.lib.styles import getSampleStyleSheet
-        from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
-        from reportlab.lib import colors
         from reportlab.lib.units import cm
+        from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer
     except ImportError:
         raise ImportError("reportlab not installed")
 
