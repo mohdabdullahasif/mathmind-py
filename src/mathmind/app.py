@@ -195,9 +195,10 @@ with tab3:
             height=200,
             width=600,
             drawing_mode="freedraw",
+            return_image_data=True,
             key="canvas",
         )
-        if canvas_result.image_data is not None and st.button("Recognize Drawing"):
+        if st.button("Recognize Drawing") and canvas_result.image_data is not None:
             st.info("Canvas recognition: save as image and use the uploader above.")
     except ImportError:
         pass
