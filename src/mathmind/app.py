@@ -10,14 +10,17 @@ st.set_page_config(page_title="MathMind", page_icon="🧮", layout="wide")
 from mathmind.core.engine import solve
 from mathmind.core.symbols import SymbolTable
 from mathmind.inputs.nl import translate
-from mathmind.math.symbolic import (
-    symbolic_diff, symbolic_expand, symbolic_factor,
-    symbolic_integrate, symbolic_simplify, symbolic_solve,
-)
 from mathmind.math.matrix import mat_det, mat_inverse, mat_ops, stats_summary
+from mathmind.math.symbolic import (
+    symbolic_diff,
+    symbolic_expand,
+    symbolic_factor,
+    symbolic_integrate,
+    symbolic_simplify,
+)
 from mathmind.ml.strategy.predict import predict as predict_strategy
-from mathmind.store import get_history, save_result
 from mathmind.models import Result
+from mathmind.store import get_history, save_result
 
 if "symbols" not in st.session_state:
     st.session_state.symbols = SymbolTable()
@@ -169,7 +172,7 @@ with tab3:
                 if model_path.exists():
                     from mathmind.inputs.vision.infer import predict_symbols
                     model = load_model(str(model_path))
-                    preds = predict_symbols(crops)
+                    preds = predict_symbols(crops, model)
                     expr, conf = predictions_to_expression(preds)
                     st.success(f"Recognized: `{expr}` (confidence: {conf:.0%})")
                     result = solve(expr, symbols, channel="vision")
