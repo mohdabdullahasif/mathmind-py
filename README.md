@@ -66,13 +66,24 @@ mathmind train --n 10000
 mathmind history
 ```
 
-## Streamlit App
+## Web App (Streamlit)
+
+MathMind includes an interactive 5-tab Streamlit web interface ([src/mathmind/app.py](src/mathmind/app.py)):
 
 ```bash
+pip install -e ".[app]"
 streamlit run src/mathmind/app.py
 ```
 
-Then open `http://localhost:8501` — 5 tabs: Type, Speak, Draw/Upload, Matrix & Stats, History.
+Open `http://localhost:8501` in your browser to access:
+
+| Tab | What it does |
+|-----|--------------|
+| **Type** | Evaluate expressions or run symbolic operations (`solve`, `simplify`, `expand`, `factor`, `diff`, `integrate`), toggle `radians`/`degrees`, translate natural-language queries, view predicted solving strategy & confidence, inspect step-by-step solutions + rendered LaTeX, and export directly to PDF. |
+| **Speak / Transcribe** | Upload a `.wav`/`.mp3` audio clip for Whisper transcription or paste a spoken transcript, normalize math phrases into canonical expressions, and solve. |
+| **Draw / Upload** | Upload a handwritten math image (`PNG`/`JPG`, up to 10 MB) for OpenCV symbol segmentation + CNN recognition, or sketch directly on the interactive drawable canvas (`streamlit-drawable-canvas`). |
+| **Matrix & Stats** | Compute matrix `det`, `inverse`, `transpose`, `rank`, `trace`, and `eigenvalues`, or run descriptive statistics (`mean`, `median`, `mode`, `std`, `variance`, `min`, `max`, `Q1`, `Q3`, `IQR`) on datasets. |
+| **History** | Browse past calculations stored in local SQLite (`history`, `steps`, `variables`, `model_registry`) with channel, expression, result, and strategy metadata. |
 
 ## Run Tests
 
