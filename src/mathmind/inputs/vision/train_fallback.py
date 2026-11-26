@@ -97,8 +97,9 @@ def _render_sample(sym: str) -> np.ndarray:
 def extract_crop_features(crop: np.ndarray) -> np.ndarray:
     """Convert a 28x28 grayscale crop to a normalized feature vector."""
     norm = crop.astype(np.float32) / 255.0
-    if norm.max() > 0:
-        norm = norm / norm.max()
+    max_val = float(np.max(norm))
+    if max_val > 0:
+        norm = norm / max_val
     flat = norm.flatten()
     h_proj = norm.mean(axis=1)
     v_proj = norm.mean(axis=0)
