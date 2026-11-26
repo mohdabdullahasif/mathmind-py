@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "AI-powered math assistant with expression engine, symbolic math, ML strategy prediction, and multi-modal input"
 readme = "README.md"
 license = { file = "LICENSE" }
-requires-python = ">=3.11"
+requires-python = ">=3.11,<4"
 authors = [{ name = "mohdabdullaha", email = "231370148@gift.edu.pk" }]
 keywords = ["math", "ai", "sympy", "calculator", "nlp", "computer-vision"]
 classifiers = [
