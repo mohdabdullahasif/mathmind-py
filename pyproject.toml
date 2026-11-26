@@ -1,0 +1,61 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mathmind"
+version = "0.1.0"
+description = "AI-powered math assistant with expression engine, symbolic math, ML strategy prediction, and multi-modal input"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.11"
+authors = [{ name = "mohdabdullaha", email = "231370148@gift.edu.pk" }]
+keywords = ["math", "ai", "sympy", "calculator", "nlp", "computer-vision"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "sympy>=1.12",
+    "numpy>=1.26",
+    "scipy>=1.11",
+    "scikit-learn>=1.3",
+    "matplotlib>=3.8",
+    "rich>=13.0",
+    "typer>=0.9",
+    "prompt_toolkit>=3.0",
+    "reportlab>=4.0",
+    "sqlalchemy>=2.0",
+]
+
+[project.optional-dependencies]
+vision = ["opencv-python>=4.8", "Pillow>=10.0", "torch>=2.0", "torchvision>=0.15"]
+voice = ["openai-whisper", "sounddevice", "soundfile"]
+nlp = ["transformers>=4.35", "sentencepiece"]
+app = ["streamlit>=1.28", "streamlit-drawable-canvas"]
+dev = [
+    "pytest>=7.4",
+    "pytest-cov>=4.1",
+    "hypothesis>=6.90",
+    "mypy>=1.6",
+    "ruff>=0.1",
+]
+
+[project.scripts]
+mathmind = "mathmind.cli:app"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v --tb=short"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.mypy]
+python_version = "3.11"
+ignore_missing_imports = true
